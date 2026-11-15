@@ -1,0 +1,296 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    
+    body {
+        @apply font-[sans-serif];
+    }
+
+    ::-webkit-scrollbar {
+        @apply w-2.5 h-2.5;
+    }
+
+    ::-webkit-scrollbar-track {
+        @apply bg-gray-200;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background-color: #2563EB;
+        border-radius: 9999px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background-color: #1D4ED8;
+    }
+
+    textarea, input:focus {
+        @apply focus:outline-none;
+    }
+
+    .ul-padding{
+        padding-inline-start: 0.9rem;
+    }
+
+    .ul-padding-none{
+        padding-inline-start: 0;
+    }
+}
+
+@layer components{
+    .pi{
+        @apply p-2.5 mb-2 text-[#172033] bg-[#EFF6FF] border border-[#BFDBFE] rounded-md text-[0.9rem] focus:bg-white focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/30 focus:outline-none transition-all duration-150 placeholder:text-gray-400 shadow-sm;
+    }
+
+    .profileInput{
+        @apply pi file:mr-3 file:py-1.5 file:px-3 file:border-0 file:bg-[#2563EB] hover:file:bg-[#1D4ED8] file:text-white file:text-xs file:font-semibold file:rounded-md file:cursor-pointer file:transition-all file:duration-150 hover:file:scale-105 active:file:scale-95;
+    }
+
+    .flex-col-gap-2{
+        @apply flex flex-col gap-2;
+    }
+
+    .flex-wrap-gap-2{
+        @apply flex flex-wrap gap-2;
+    }
+
+    .other-input{
+        @apply p-2.5 mb-2 text-[#172033] bg-[#EFF6FF] border border-[#BFDBFE] rounded-md focus:bg-white focus:border-[#60A5FA] focus:ring-2 focus:ring-[#60A5FA]/30 focus:outline-none focus:placeholder-transparent transition-all duration-150 placeholder:text-gray-400 shadow-sm;
+    }
+
+    .input-title{
+        @apply text-[1.05rem] text-white font-semibold tracking-wide border-b border-blue-400/30 pb-1.5 mt-3 flex items-center justify-between;
+    }
+
+    .btn-action{
+        @apply inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs md:text-sm font-semibold text-white bg-[#2563EB] hover:bg-[#1D4ED8] active:scale-95 transition-all duration-200 rounded-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#60A5FA] select-none;
+    }
+
+    .btn-save{
+        @apply inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs md:text-sm font-semibold text-white bg-[#0F766E] hover:bg-[#115E59] active:scale-95 transition-all duration-200 rounded-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-400 select-none;
+    }
+
+    .btn-download{
+        @apply inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs md:text-sm font-semibold text-white bg-[#059669] hover:bg-[#047857] active:scale-95 transition-all duration-200 rounded-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-400 select-none;
+    }
+
+    .btn-add-section{
+        @apply inline-flex items-center justify-center gap-2 w-full py-2 px-3 text-xs md:text-sm font-semibold text-white bg-[#2563EB]/90 hover:bg-[#1D4ED8] active:scale-[0.98] transition-all duration-200 rounded-lg shadow-sm hover:shadow-md border border-blue-400/30 cursor-pointer mt-1 focus:outline-none focus:ring-2 focus:ring-[#60A5FA] select-none;
+    }
+
+    .btn-add{
+        @apply p-2 text-white bg-[#2563EB] hover:bg-[#1D4ED8] rounded-lg text-lg shadow-md transition-all duration-200 hover:scale-105 active:scale-95 hover:shadow-lg flex items-center justify-center cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#60A5FA];
+    }
+
+    .btn-remove{
+        @apply p-2 text-white bg-blue-900/70 hover:bg-rose-600 rounded-lg text-sm shadow-sm transition-all duration-200 hover:scale-105 active:scale-95 flex items-center justify-center cursor-pointer border border-blue-400/20 focus:outline-none focus:ring-2 focus:ring-rose-400;
+    }
+
+    .f-col{
+        @apply flex flex-col;
+    }
+
+    .grid-4{
+        @apply grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-4;
+    }
+
+    .editable{
+        @apply hover:bg-gray-100 hover:cursor-text outline-none;
+    }
+
+}
+
+.name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    line-height: 1.15;
+    margin: 0;
+}
+
+.profession {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.contact {
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1.25;
+}
+
+.social-media {
+    font-size: 0.71875rem;
+    font-weight: 400;
+    line-height: 1.25;
+}
+
+.section-title {
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.content {
+    font-size: 0.75rem;
+    font-weight: 400;
+    line-height: 1.35;
+}
+
+.sub-content {
+    font-size: 0.71875rem;
+    font-weight: 400;
+    line-height: 1.3;
+}
+
+.i-bold {
+    font-weight: 700 !important;
+}
+
+/* Density Modifiers for Guaranteed 1-Page Fit */
+.cv-compact .name {
+    font-size: 1.15rem;
+}
+.cv-compact .profession {
+    font-size: 0.875rem;
+}
+.cv-compact .contact {
+    font-size: 0.71875rem;
+}
+.cv-compact .social-media {
+    font-size: 0.6875rem;
+}
+.cv-compact .section-title {
+    font-size: 0.78125rem;
+}
+.cv-compact .content {
+    font-size: 0.71875rem;
+    line-height: 1.3;
+}
+.cv-compact .sub-content {
+    font-size: 0.6875rem;
+    line-height: 1.25;
+}
+
+.cv-spacious .name {
+    font-size: 1.35rem;
+}
+.cv-spacious .profession {
+    font-size: 1rem;
+}
+.cv-spacious .contact {
+    font-size: 0.8125rem;
+}
+.cv-spacious .social-media {
+    font-size: 0.75rem;
+}
+.cv-spacious .section-title {
+    font-size: 0.875rem;
+}
+.cv-spacious .content {
+    font-size: 0.8125rem;
+    line-height: 1.45;
+}
+.cv-spacious .sub-content {
+    font-size: 0.75rem;
+    line-height: 1.35;
+}
+
+@media print {
+    @page {
+        size: 210mm 297mm;
+        margin: 0;
+    }
+
+    *,
+    *::before,
+    *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    html,
+    body {
+        width: 210mm !important;
+        height: 297mm !important;
+        max-width: 210mm !important;
+        max-height: 297mm !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        overflow: hidden !important;
+    }
+
+    /* Completely hide the form pane, toolbars, buttons, highlight menu and popups */
+    #builder-form-pane,
+    .exclude-print,
+    .print-hidden,
+    .highlight-menu-container,
+    nextjs-portal,
+    #nextjs__container {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        width: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+    }
+
+    /* Flatten parent layout containers so document flows onto printed page naturally */
+    #__next,
+    main,
+    #builder-main-container,
+    #builder-preview-pane,
+    .preview,
+    #resume-preview-document {
+        display: block !important;
+        width: 210mm !important;
+        max-width: 210mm !important;
+        height: 297mm !important;
+        max-height: 297mm !important;
+        overflow: hidden !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        position: static !important;
+        transform: none !important;
+    }
+
+    #resume-a4-page {
+        display: block !important;
+        width: 210mm !important;
+        max-width: 210mm !important;
+        min-height: 297mm !important;
+        max-height: 297mm !important;
+        margin: 0 auto !important;
+        box-sizing: border-box !important;
+        box-shadow: none !important;
+        border: none !important;
+        background: #ffffff !important;
+        overflow: hidden !important;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        break-after: avoid !important;
+        zoom: var(--print-scale, 1) !important;
+    }
+
+    /* Prevent any individual item from triggering page break */
+    #resume-a4-page * {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    .rm-padding-print {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+}

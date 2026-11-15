@@ -1,0 +1,34 @@
+import React from "react";
+
+const ContactInfo = ({
+  mainclass,
+  linkclass,
+  teldata,
+  emaildata,
+  addressdata,
+  telicon,
+  emailicon,
+  addressicon,
+}) => {
+  return (
+    <div className={mainclass}>
+      {teldata && (
+        <a className={linkclass} aria-label="Phone Number" href={`tel:${teldata}`}>
+          {telicon} {teldata}
+        </a>
+      )}
+      {emaildata && (
+        <a className={linkclass} aria-label="Email Address" href={`mailto:${emaildata}`}>
+          {emailicon} {emaildata}
+        </a>
+      )}
+      {addressdata && (
+        <address className={`${linkclass} not-italic`} aria-label="Address">
+          {addressicon} {addressdata}
+        </address>
+      )}
+    </div>
+  );
+};
+
+export default ContactInfo;

@@ -1,0 +1,33 @@
+import React from 'react';
+import LoadUnload from "../components/LoadUnload";
+import PersonalInformation from "../components/PersonalInformation";
+import SocialMedias from "../components/socialMedia/ui/SocialMedias";
+import Summary from "../components/Summary";
+import Educations from "../components/education/ui/Educations";
+import WorkExperiences from "../components/workExperience/ui/WorkExperiences";
+import Projects from "../components/projects/ui/Projects";
+import Skills from "../components/skills/ui/Skills";
+import Languages from "../components/languages/ui/Languages";
+import TestsAndCertifications from "../components/testsAndCertifications/ui/TestsAndCertifications";
+
+const Form = () => {
+  return (
+    <div
+      role="form"
+      className="p-4 md:p-6 bg-[#172554] shadow-2xl exclude-print w-full h-full overflow-y-auto transition-colors duration-200 border-r border-blue-900/60"
+    >
+      <LoadUnload/>
+      <PersonalInformation/>
+      <SocialMedias/>
+      <Summary/>
+      <Educations/>
+      <WorkExperiences/>
+      <Projects/>
+      <Skills/>
+      <Languages/>
+      <TestsAndCertifications/>
+    </div>
+  );
+};
+
+export default Form;
