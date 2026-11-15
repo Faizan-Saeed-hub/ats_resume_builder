@@ -20,16 +20,119 @@ export const downloadPdfDirect = async (
     return;
   }
 
+  // Mobile safety: if preview pane is hidden (e.g. mobile "editor" tab is active),
+  // temporarily position it offscreen so DOM cloner and html2canvas can measure & capture it.
+  const previewPane = typeof document !== "undefined" ? document.getElementById("builder-preview-pane") : null;
+  let wasHidden = false;
+  if (previewPane && typeof window !== "undefined") {
+    const computedDisplay = window.getComputedStyle(previewPane).display;
+    if (computedDisplay === "none") {
+      wasHidden = true;
+      previewPane.style.setProperty("display", "block", "important");
+      previewPane.style.setProperty("position", "fixed", "important");
+      previewPane.style.setProperty("top", "-99999px", "important");
+      previewPane.style.setProperty("left", "-99999px", "important");
+      previewPane.style.setProperty("width", "794px", "important");
+      previewPane.style.setProperty("z-index", "-9999", "important");
+    }
+  }
+
   try {
     const html2canvas = (await import("html2canvas")).default;
     const { jsPDF } = await import("jspdf");
 
+    const rawTextNodes = [];
+
     // Render the resume element to high-res canvas at 2x scale
+    // Force windowWidth: 1200 so Tailwind's sm: (>=640px) and md: (>=768px) desktop media queries apply identically on all mobile and desktop devices.
     const canvas = await html2canvas(element, {
       scale: 2,
       useCORS: true,
       logging: false,
       backgroundColor: "#ffffff",
+      windowWidth: 1200,
+      windowHeight: 1600,
+      onclone: (clonedDoc, clonedTarget) => {
+        // 1. Ensure preview pane is visible and full desktop width in cloned iframe
+        const clonedPreviewPane = clonedDoc.getElementById("builder-preview-pane");
+        if (clonedPreviewPane) {
+          clonedPreviewPane.classList.remove("hidden");
+          clonedPreviewPane.style.setProperty("display", "block", "important");
+          clonedPreviewPane.style.setProperty("visibility", "visible", "important");
+          clonedPreviewPane.style.setProperty("position", "static", "important");
+          clonedPreviewPane.style.setProperty("left", "auto", "important");
+          clonedPreviewPane.style.setProperty("top", "auto", "important");
+          clonedPreviewPane.style.setProperty("width", "1200px", "important");
+          clonedPreviewPane.style.setProperty("max-width", "1200px", "important");
+        }
+
+        const clonedMain = clonedDoc.getElementById("builder-main-container");
+        if (clonedMain) {
+          clonedMain.style.setProperty("display", "block", "important");
+          clonedMain.style.setProperty("width", "1200px", "important");
+        }
+
+        const clonedDocWrapper = clonedDoc.getElementById("resume-preview-document");
+        if (clonedDocWrapper) {
+          clonedDocWrapper.style.setProperty("width", "850px", "important");
+          clonedDocWrapper.style.setProperty("max-width", "850px", "important");
+          clonedDocWrapper.style.setProperty("display", "flex", "important");
+          clonedDocWrapper.style.setProperty("justify-content", "center", "important");
+        }
+
+        // 2. Lock the A4 page element to standard desktop 794px width
+        const targetPage =
+          clonedDoc.getElementById("resume-a4-page") ||
+          clonedTarget ||
+          clonedDoc.getElementById(elementId);
+
+        if (targetPage) {
+          targetPage.style.setProperty("display", "block", "important");
+          targetPage.style.setProperty("visibility", "visible", "important");
+          targetPage.style.setProperty("width", "794px", "important");
+          targetPage.style.setProperty("min-width", "794px", "important");
+          targetPage.style.setProperty("max-width", "794px", "important");
+          targetPage.style.setProperty("margin", "0 auto", "important");
+          targetPage.style.setProperty("box-sizing", "border-box", "important");
+          targetPage.style.setProperty("transform", "none", "important");
+
+          // 3. Collect text nodes from the desktop-rendered cloned element for exact coordinate mapping
+          try {
+            const elemRect = targetPage.getBoundingClientRect();
+            const walk = (node) => {
+              if (!node) return;
+              if (node.nodeType === Node.TEXT_NODE) {
+                const text = node.textContent?.trim();
+                if (text && text.length > 0 && node.parentElement) {
+                  const rect = node.parentElement.getBoundingClientRect();
+                  if (rect.width > 0 && rect.height > 0 && elemRect.width > 0) {
+                    rawTextNodes.push({
+                      text,
+                      left: rect.left - elemRect.left,
+                      top: rect.top - elemRect.top,
+                      width: elemRect.width,
+                      height: elemRect.height,
+                    });
+                  }
+                }
+              } else if (node.nodeType === Node.ELEMENT_NODE) {
+                const isExcluded =
+                  node.classList && typeof node.classList.contains === "function"
+                    ? node.classList.contains("exclude-print") || node.classList.contains("print-hidden")
+                    : false;
+                if (!isExcluded) {
+                  for (let child of node.childNodes) {
+                    walk(child);
+                  }
+                }
+              }
+            };
+            walk(targetPage);
+          } catch (walkErr) {
+            console.warn("Could not extract cloned text nodes:", walkErr);
+          }
+        }
+      },
       ignoreElements: (el) => {
         return (
           el.classList?.contains("exclude-print") ||
@@ -106,53 +209,27 @@ export const downloadPdfDirect = async (
       "FAST"
     );
 
-    // Inject selectable text layer from DOM elements
+    // Inject selectable text layer from desktop-cloned elements
     try {
-      const textNodes = [];
-      const walk = (node) => {
-        if (!node) return;
-        if (node.nodeType === Node.TEXT_NODE) {
-          const text = node.textContent?.trim();
-          if (text && text.length > 0 && node.parentElement) {
-            const rect = node.parentElement.getBoundingClientRect();
-            const elemRect = element.getBoundingClientRect();
-            if (rect.width > 0 && rect.height > 0) {
-              const relX = ((rect.left - elemRect.left) / elemRect.width) * renderWidth + offsetX;
-              const relY = ((rect.top - elemRect.top) / elemRect.height) * renderHeight + offsetY + 3;
-              textNodes.push({ text, x: relX, y: relY });
-            }
-          }
-        } else if (node.nodeType === Node.ELEMENT_NODE) {
-          const isExcluded =
-            node.classList && typeof node.classList.contains === "function"
-              ? node.classList.contains("exclude-print") || node.classList.contains("print-hidden")
-              : false;
-          if (!isExcluded) {
-            for (let child of node.childNodes) {
-              walk(child);
-            }
-          }
-        }
-      };
-      walk(element);
-
-      // Render invisible selectable text stream
       pdf.setFont("helvetica", "normal");
       pdf.setFontSize(8);
-      for (const item of textNodes) {
-        if (item.x >= 0 && item.x <= pdfPageWidth && item.y >= 0 && item.y <= pdfPageHeight) {
+      for (const item of rawTextNodes) {
+        const x = (item.left / item.width) * renderWidth + offsetX;
+        const y = (item.top / item.height) * renderHeight + offsetY + 3;
+
+        if (x >= 0 && x <= pdfPageWidth && y >= 0 && y <= pdfPageHeight) {
           // Sanitize control characters to prevent PDF stream corruption
           const safeText = (item.text || "").replace(/[\u0000-\u0008\u000B-\u000C\u000E-\u001F]/g, "");
           if (!safeText) continue;
           try {
-            pdf.text(safeText, item.x, item.y, {
+            pdf.text(safeText, x, y, {
               renderingMode: "invisible",
             });
           } catch (e) {
             try {
               // fallback if renderingMode not supported by specific jspdf build
               pdf.setTextColor(255, 255, 255);
-              pdf.text(safeText, item.x, item.y);
+              pdf.text(safeText, x, y);
             } catch (fallbackErr) {
               // Ignore individual problematic glyphs rather than failing entire layer
             }
@@ -168,6 +245,16 @@ export const downloadPdfDirect = async (
   } catch (err) {
     console.error("Direct PDF generation failed, falling back to print dialog:", err);
     window.print();
+  } finally {
+    // Restore preview pane visibility if it was temporarily unhidden
+    if (wasHidden && previewPane) {
+      previewPane.style.removeProperty("display");
+      previewPane.style.removeProperty("position");
+      previewPane.style.removeProperty("top");
+      previewPane.style.removeProperty("left");
+      previewPane.style.removeProperty("width");
+      previewPane.style.removeProperty("z-index");
+    }
   }
 };
 
